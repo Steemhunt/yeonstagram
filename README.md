@@ -25,7 +25,7 @@ Yonsei University Instagram Clone with MiniKit & mint.club v2
 
 1. **저장소 클론**
    ```bash
-   git clone https://github.com/your-repo/yeonstagram.git
+   git clone https://github.com/steemhunt/yeonstagram.git
    cd yeonstagram
    ```
 
