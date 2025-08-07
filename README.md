@@ -2,7 +2,7 @@
 
 Yonsei University Instagram Clone with MiniKit & mint.club v2
 
-![Yeonstagram Preview](public/og.png)
+![Yeonstagram Preview](https://cdn.discordapp.com/attachments/995243442261217361/1402904525190463538/Screenshot_2025-08-07_at_15.41.25.png?ex=68959c27&is=68944aa7&hm=76858284f3c8412a5bee4406fa9d49001d3c30815885f615e4a570242a192a5f&)
 
 ## 🌟 프로젝트 소개
 
