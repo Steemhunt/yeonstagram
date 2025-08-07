@@ -82,29 +82,57 @@ export default function CreatePostModal({
    * NFT 포스트 생성
    */
   const handleCreate = async () => {
+    console.log("🚀 NFT 포스트 생성 시작");
+    console.log("📝 입력 데이터:", {
+      postName,
+      hasFile: !!selectedFile,
+      userToken,
+    });
+
     // 입력값 검증
     if (!postName || !selectedFile) {
+      console.error("❌ 입력값 검증 실패: 이름 또는 파일 누락");
       toast.error(TOAST_MESSAGES.IMAGE_REQUIRED);
       return;
     }
 
     if (!userToken) {
+      console.error("❌ 사용자 토큰이 없습니다");
       toast.error(TOAST_MESSAGES.TOKEN_REQUIRED);
       return;
     }
+
+    if (!userToken.tokenAddress || !userToken.tokenAddress.startsWith("0x")) {
+      console.error("❌ 유효하지 않은 토큰 주소:", userToken.tokenAddress);
+      toast.error("유효하지 않은 토큰 주소입니다. 토큰을 다시 생성해주세요.");
+      return;
+    }
+
+    console.log("✅ 모든 입력값 검증 통과");
 
     setCreating(true);
     try {
       // 1. 이미지를 IPFS에 업로드
       setUploading(true);
-      console.log("Filebase를 통한 IPFS 이미지 업로드 시작...");
+      console.log("📤 STEP 1: Filebase를 통한 IPFS 이미지 업로드 시작...");
+      console.log("📁 파일 정보:", {
+        name: selectedFile.name,
+        size: `${(selectedFile.size / 1024 / 1024).toFixed(2)}MB`,
+        type: selectedFile.type,
+      });
       toast.loading(TOAST_MESSAGES.POST_UPLOAD, { id: "post-creation" });
 
       const imageUrl = await uploadToIPFS(selectedFile);
-      console.log("이미지 업로드 완료:", imageUrl);
+      console.log("✅ STEP 1 완료 - 이미지 업로드 성공:", imageUrl);
+
+      if (!imageUrl || !imageUrl.startsWith("ipfs://")) {
+        throw new Error(`유효하지 않은 IPFS URL: ${imageUrl}`);
+      }
 
       // 2. 메타데이터를 IPFS에 업로드
-      console.log("메타데이터 IPFS 업로드 시작...");
+      console.log("📋 STEP 2: 메타데이터 IPFS 업로드 시작...");
+      const metadata = { image: imageUrl, name: postName };
+      console.log("📝 메타데이터:", metadata);
       toast.loading(TOAST_MESSAGES.POST_METADATA, { id: "post-creation" });
 
       const { uploadMetadata } = await import("../server/ipfs");
@@ -112,53 +140,93 @@ export default function CreatePostModal({
       metadataForm.append("image", imageUrl);
       metadataForm.append("name", postName);
       const metadataUrl = await uploadMetadata(metadataForm);
-      console.log("메타데이터 업로드 완료:", metadataUrl);
+      console.log("✅ STEP 2 완료 - 메타데이터 업로드 성공:", metadataUrl);
+
+      if (!metadataUrl || !metadataUrl.startsWith("ipfs://")) {
+        throw new Error(`유효하지 않은 메타데이터 URL: ${metadataUrl}`);
+      }
 
       setUploading(false);
 
       // 3. NFT 생성
-      console.log("NFT 포스트 생성 시작...");
+      console.log("🎨 STEP 3: NFT 포스트 생성 시작...");
+      const nftSymbol = `${postName}-${Date.now()}`
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .substring(0, 20);
+      console.log("🏷️ NFT 심볼:", nftSymbol);
+
+      const nftParams = {
+        name: postName,
+        metadataUrl: metadataUrl as `ipfs://${string}`,
+        reserveToken: {
+          address: userToken.tokenAddress as `0x${string}`,
+          decimals: NFT_CONFIG.DECIMALS,
+        },
+        curveData: {
+          curveType: NFT_CONFIG.CURVE_TYPE,
+          stepCount: NFT_CONFIG.STEP_COUNT,
+          maxSupply: NFT_CONFIG.MAX_SUPPLY,
+          initialMintingPrice: NFT_CONFIG.INITIAL_PRICE,
+          finalMintingPrice: NFT_CONFIG.FINAL_PRICE,
+          creatorAllocation: NFT_CONFIG.CREATOR_ALLOCATION,
+        },
+      };
+
+      console.log("⚙️ NFT 생성 파라미터:", nftParams);
       toast.loading(TOAST_MESSAGES.POST_CREATING, { id: "post-creation" });
 
+      console.log("📡 mint.club SDK 호출 중...");
       const result = await mintclub
         .network(NETWORK.BASE_SEPOLIA)
-        .nft(postName)
-        .create({
-          name: postName,
-          metadataUrl: metadataUrl as `ipfs://${string}`,
-          reserveToken: {
-            address: userToken.tokenAddress as `0x${string}`,
-            decimals: NFT_CONFIG.DECIMALS,
-          },
-          curveData: {
-            curveType: NFT_CONFIG.CURVE_TYPE,
-            stepCount: NFT_CONFIG.STEP_COUNT,
-            maxSupply: NFT_CONFIG.MAX_SUPPLY,
-            initialMintingPrice: NFT_CONFIG.INITIAL_PRICE,
-            finalMintingPrice: NFT_CONFIG.FINAL_PRICE,
-            creatorAllocation: NFT_CONFIG.CREATOR_ALLOCATION,
-          },
-        });
+        .nft(nftSymbol)
+        .create(nftParams);
+
+      console.log("🔍 NFT 생성 결과 타입:", typeof result);
+      console.log("📊 NFT 생성 결과 상세:", result);
 
       if (result) {
-        console.log("NFT 생성 성공!");
+        console.log("🎉 NFT 생성 성공!");
         toast.success(TOAST_MESSAGES.POST_SUCCESS, { id: "post-creation" });
+        onSuccess();
+      } else {
+        console.error("❌ NFT 생성 실패: 결과가 null/undefined");
+        throw new Error("NFT 생성에 실패했습니다. 결과가 반환되지 않았습니다.");
+      }
+    } catch (error) {
+      console.error("💥 포스트 생성 중 오류 발생:");
+      console.error("🔍 에러 타입:", typeof error);
+      console.error("📋 에러 상세:", error);
+
+      if (error instanceof Error) {
+        console.error("📝 에러 메시지:", error.message);
+        console.error("🔗 에러 스택:", error.stack);
       }
 
-      onSuccess();
-    } catch (error) {
-      console.error("포스트 생성 오류:", error);
       const errorMessage =
         error instanceof Error ? error.message : "알 수 없는 오류";
+      console.error("🚨 최종 에러 메시지:", errorMessage);
 
       if (errorMessage?.includes("FILEBASE_API_KEY")) {
+        console.error("❌ Filebase API 키 문제");
         toast.error(TOAST_MESSAGES.FILEBASE_ERROR, { id: "post-creation" });
+      } else if (errorMessage?.includes("User rejected")) {
+        console.error("❌ 사용자가 트랜잭션 거부");
+        toast.error("트랜잭션이 거부되었습니다.", { id: "post-creation" });
+      } else if (errorMessage?.includes("insufficient funds")) {
+        console.error("❌ 잔액 부족");
+        toast.error("ETH 잔액이 부족합니다.", { id: "post-creation" });
+      } else if (errorMessage?.includes("already exists")) {
+        console.error("❌ NFT 이름 중복");
+        toast.error("이미 존재하는 NFT 이름입니다. 다른 이름을 사용해주세요.", {
+          id: "post-creation",
+        });
       } else {
         toast.error(`포스트 생성에 실패했습니다: ${errorMessage}`, {
           id: "post-creation",
         });
       }
     } finally {
+      console.log("🏁 NFT 생성 프로세스 종료");
       setCreating(false);
       setUploading(false);
     }

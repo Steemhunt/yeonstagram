@@ -113,9 +113,7 @@ export default function PostGrid({
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <Image
-              width={100}
-              height={100}
+            <img
               src={post.image}
               alt={post.name}
               className="w-full h-full object-cover"
@@ -169,7 +167,7 @@ export default function PostGrid({
   if (posts.length > 0) {
     return (
       <motion.div
-        className="grid grid-cols-3 gap-1"
+        className="grid grid-cols-3 gap-1 px-4"
         variants={staggerContainer}
         initial="initial"
         animate="animate"

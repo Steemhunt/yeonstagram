@@ -27,11 +27,11 @@ export const USER_TOKEN_CONFIG = {
 
 // NFT 생성 설정 (포스트)
 export const NFT_CONFIG = {
-  CURVE_TYPE: "EXPONENTIAL" as const,
+  CURVE_TYPE: "LINEAR" as const,
   STEP_COUNT: 10,
-  MAX_SUPPLY: 10_000,
-  INITIAL_PRICE: 1, // 1 user token
-  FINAL_PRICE: 100_000, // 100,000 user tokens
+  MAX_SUPPLY: 100,
+  INITIAL_PRICE: 0.0000001, // 0.0000001 ETH
+  FINAL_PRICE: 0.1, // 0.1 ETH
   CREATOR_ALLOCATION: 1,
   DECIMALS: 18,
 } as const;

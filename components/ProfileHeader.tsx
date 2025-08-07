@@ -14,25 +14,11 @@ export default function ProfileHeader({
   checkingToken,
   onActivate,
 }: ProfileHeaderProps) {
-  {
-    /* 
-          TODO Task 2: 프로필 정보 표시
-          
-          🎯 목표: Farcaster 프로필 정보를 표시하세요
-          📝 힌트: const {context} = useMiniKit();
-          const userContext = context?.user;
-          const userName = userContext?.username;
-          const userPfpUrl = userContext?.pfpUrl;
-          const userFid = userContext?.fid;
-          
-        */
-  }
-
-  const data = {
-    userName: "test",
-    userPfpUrl: "https://i.makeagif.com/media/12-12-2023/dKpfk7.gif",
-    userFid: 1111,
-  };
+  const { context } = useMiniKit();
+  const userContext = context?.user;
+  const userName = userContext?.username || "사용자";
+  const userPfpUrl = userContext?.pfpUrl;
+  const userFid = userContext?.fid;
 
   return (
     <motion.div
@@ -53,10 +39,9 @@ export default function ProfileHeader({
           whileTap={{ scale: 0.95 }}
           transition={{ ...spring.smooth }}
         >
-          {/* TODO: 프로필 이미지 조건부 렌더링 */}
-          {data.userPfpUrl ? (
+          {userPfpUrl ? (
             <motion.img
-              src={data.userPfpUrl}
+              src={userPfpUrl}
               alt="Profile"
               className="w-full h-full object-cover"
               initial={{ scale: 1.2, opacity: 0 }}
@@ -96,7 +81,7 @@ export default function ProfileHeader({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: timing.normal }}
             >
-              {data.userName}
+              {userName}
             </motion.h1>
 
             {/* 토큰 상태에 따른 버튼 표시 */}
@@ -113,7 +98,7 @@ export default function ProfileHeader({
             ) : (
               <motion.button
                 onClick={onActivate}
-                disabled={checkingToken || !data.userName}
+                disabled={checkingToken || !userName}
                 className="px-4 py-1 text-sm font-medium text-white rounded-md disabled:opacity-50"
                 style={{ backgroundColor: DESIGN.YONSEI_BLUE }}
                 whileHover={{ scale: 1.05 }}
@@ -133,7 +118,7 @@ export default function ProfileHeader({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: timing.normal }}
           >
-            FID: {data.userFid}
+            {userFid && `FID: ${userFid}`}
           </motion.p>
 
           {/* 토큰 정보 표시 */}

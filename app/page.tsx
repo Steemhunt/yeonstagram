@@ -55,19 +55,18 @@ export default function App() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Farcaster 사용자 정보
-  const userContext = context?.user;
-  const username = userContext?.username;
+  // const userContext = context?.user;
+  // const username = userContext?.username;
+  const username = "to";
+  const userContext = {
+    username: "to",
+    profileImageUrl: "https://i.imgur.com/1234567890.jpg",
+  };
 
   /**
-   * TODO Task 1: MiniKit 초기화
-   *
-   * 🎯 목표: Farcaster MiniKit SDK 초기화
-   * 📝 힌트: setFrameReady(); 함수를 호출하세요
-   *
-   * 이 함수는 MiniKit이 Farcaster 앱과 통신할 수 있도록 준비시킵니다.
+   * MiniKit 초기화
    */
   useEffect(() => {
-    // TODO: MiniKit SDK 초기화 코드 작성
     setFrameReady();
   }, []);
 
@@ -88,11 +87,33 @@ export default function App() {
    * 토큰 활성화 핸들러
    */
   const handleActivate = async () => {
-    if (!username) return;
+    if (!username) {
+      console.error("❌ 사용자명이 없어 토큰을 활성화할 수 없습니다");
+      return;
+    }
 
+    console.log("🚀 토큰 활성화 시작:", username);
     const success = await createUserToken(username);
-    if (success && userToken) {
-      loadUserPosts(userToken.tokenAddress);
+    console.log("📋 토큰 생성 결과:", success);
+
+    if (success) {
+      console.log("✅ 토큰 생성 성공, userToken 상태 확인:", userToken);
+      if (userToken && userToken.tokenAddress) {
+        console.log("📋 포스트 로딩 시작...");
+        loadUserPosts(userToken.tokenAddress);
+      } else {
+        console.warn(
+          "⚠️ 토큰은 생성되었지만 userToken 상태가 아직 업데이트되지 않음"
+        );
+        // 잠시 후 다시 확인
+        setTimeout(() => {
+          if (userToken?.tokenAddress) {
+            loadUserPosts(userToken.tokenAddress);
+          }
+        }, 2000);
+      }
+    } else {
+      console.error("❌ 토큰 생성 실패");
     }
   };
 
@@ -100,9 +121,16 @@ export default function App() {
    * 포스트 생성 성공 핸들러
    */
   const handlePostSuccess = () => {
+    console.log("🎉 포스트 생성 성공, 모달 닫기");
     setShowCreateModal(false);
-    if (userToken) {
+    if (userToken && userToken.tokenAddress) {
+      console.log("🔄 포스트 목록 새로고침");
       loadUserPosts(userToken.tokenAddress);
+    } else {
+      console.warn(
+        "⚠️ userToken이 없어 포스트를 로드할 수 없습니다",
+        userToken
+      );
     }
   };
 
