@@ -113,9 +113,7 @@ export default function PostGrid({
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <Image
-              width={100}
-              height={100}
+            <img
               src={post.image}
               alt={post.name}
               className="w-full h-full object-cover"
