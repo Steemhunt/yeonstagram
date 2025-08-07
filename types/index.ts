@@ -41,7 +41,6 @@ export interface PostGridProps {
 }
 
 export interface ProfileHeaderProps {
-  userContext: UserContext | undefined;
   userToken: UserToken | null;
   checkingToken: boolean;
   onActivate: () => void;

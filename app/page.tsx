@@ -12,7 +12,6 @@
  */
 
 import { useEffect, useState } from "react";
-import { sdk } from "@farcaster/miniapp-sdk";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 // 커스텀 훅들
@@ -32,7 +31,7 @@ import { DESIGN } from "@/constants";
  */
 export default function App() {
   // MiniKit 상태 관리
-  const { context } = useMiniKit();
+  const { context, setFrameReady } = useMiniKit();
 
   // 커스텀 훅들
   const { userToken, checkingToken, checkUserToken, createUserToken } =
@@ -51,13 +50,12 @@ export default function App() {
    * TODO Task 1: MiniKit 초기화
    *
    * 🎯 목표: Farcaster MiniKit SDK 초기화
-   * 📝 힌트: sdk.actions.ready() 함수를 호출하세요
+   * 📝 힌트: setFrameReady(); 함수를 호출하세요
    *
    * 이 함수는 MiniKit이 Farcaster 앱과 통신할 수 있도록 준비시킵니다.
    */
   useEffect(() => {
     // TODO: MiniKit SDK 초기화 코드 작성
-    // 힌트: sdk.actions.ready();
   }, []);
 
   /**
@@ -116,7 +114,6 @@ export default function App() {
       <main className="max-w-md mx-auto">
         {/* 프로필 섹션 */}
         <ProfileHeader
-          userContext={userContext}
           userToken={userToken}
           checkingToken={checkingToken}
           onActivate={handleActivate}

@@ -172,7 +172,7 @@ const { posts, loadingPosts, imageErrors, loadUserPosts, handleImageError } = us
 1. **Node.js 18+** 설치
 2. **Farcaster 계정** (Warpcast 앱에서 생성)
 3. **Filebase 계정** 및 API 키
-4. **Base Sepolia 테스트넷** ETH (소량)
+4. **Base Sepolia 테스트넷 ETH** (필수) - [Alchemy Faucet](https://www.alchemy.com/faucets/base-sepolia)에서 무료로 받기
 
 ### 🚀 Task 0: 환경 설정 (5분)
 
@@ -192,7 +192,13 @@ npm install
 NEXT_PUBLIC_FILEBASE_API_KEY=당신의_API_키
 ```
 
-#### 3. 프로젝트 실행
+#### 3. Base Sepolia ETH 받기 (중요!)
+토큰 생성을 위해 테스트넷 ETH가 필요합니다:
+1. [Alchemy Base Sepolia Faucet](https://www.alchemy.com/faucets/base-sepolia) 접속
+2. 지갑 주소 입력하여 무료 ETH 받기
+3. 수령 완료 후 지갑에서 잔액 확인
+
+#### 4. 프로젝트 실행
 ```bash
 npm run dev
 ```
@@ -208,8 +214,7 @@ npm run dev
 
 ```typescript
 /**
- * TODO Task 1: MiniKit 초기화
- * 힌트: sdk.actions.ready() 함수를 호출하세요
+ * MiniKit 초기화
  */
 useEffect(() => {
   // TODO: MiniKit SDK 초기화 코드 작성
@@ -217,7 +222,9 @@ useEffect(() => {
 }, []);
 ```
 
-**✅ 성공 확인**: 브라우저 개발자 도구에서 에러 없이 로딩
+**💡 해결 방법**: `sdk.actions.ready();` 추가
+
+**✅ 성공 확인**: 브라우저에서 "연결됨" 상태 표시
 
 ---
 
@@ -227,30 +234,29 @@ useEffect(() => {
 
 **📍 파일**: `components/ProfileHeader.tsx`
 
+**핵심 TODO 3개:**
+
+1. **프로필 이미지**: `userContext?.pfpUrl` 조건부 렌더링
+2. **사용자명**: `userContext?.username || "사용자"`  
+3. **FID**: `userContext?.fid` (선택사항)
+
 ```typescript
-/**
- * TODO Task 2: Farcaster 사용자 정보 연동
- * 힌트: userContext에서 username, pfpUrl 사용
- */
-export default function ProfileHeader({ userContext, ... }) {
-  return (
-    <div className="px-4 py-6">
-      <div className="flex items-center">
-        {/* TODO: 프로필 이미지 표시 */}
-        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
-          {/* 힌트: userContext?.pfpUrl 사용 */}
-        </div>
-        
-        <div className="ml-6 flex-1">
-          <h1 className="text-xl font-bold">
-            {/* TODO: 사용자명 표시 */}
-            {/* 힌트: userContext?.username 또는 "사용자" */}
-          </h1>
-        </div>
-      </div>
-    </div>
-  );
-}
+// TODO 1: 프로필 이미지
+{userContext?.pfpUrl ? (
+  <img src={userContext.pfpUrl} alt="Profile" className="w-full h-full object-cover" />
+) : (
+  // 기본 아바타
+)}
+
+// TODO 2: 사용자명
+<h1 className="text-xl font-bold">
+  {userContext?.username || "사용자"}
+</h1>
+
+// TODO 3: FID (선택사항)
+{userContext?.fid && (
+  <p className="text-sm text-gray-500 mt-1">FID: {userContext.fid}</p>
+)}
 ```
 
 **✅ 성공 확인**: 본인의 Farcaster 프로필 사진과 사용자명이 표시됨
@@ -263,59 +269,25 @@ export default function ProfileHeader({ userContext, ... }) {
 
 **📍 파일**: `hooks/useUserToken.ts`
 
+**핵심 TODO 2개:**
+
+1. **토큰 심볼 생성**: `BASED${username.toUpperCase()}`
+2. **SDK 호출**: `mintclub.network(NETWORK.BASE_SEPOLIA).token(tokenSymbol).exists()`
+
 ```typescript
-/**
- * TODO Task 3: 사용자 토큰 존재 여부 확인
- * 힌트: mintclub.network().token().exists() 사용
- */
-const checkUserToken = async (username: string) => {
-  if (!username) return;
+// TODO 1: 토큰 심볼 생성 - `BASED${username.toUpperCase()}`
+const tokenSymbol = `BASEDTEST`; // 수정 필요
 
-  setCheckingToken(true);
-  try {
-    // 힌트 1: 토큰 심볼 생성 (예: "BASEDTOM")
-    const tokenSymbol = `BASED${/* TODO: username을 대문자로 변환 */}`;
-
-    // 힌트 2: mint.club SDK 사용
-    const exists = await mintclub
-      .network(/* TODO: "basesepolia" 입력 */)
-      .token(/* TODO: tokenSymbol 입력 */)
-      .exists();
-
-    console.log("토큰 존재 여부:", exists);
-
-    if (exists) {
-      // 토큰 상세 정보 가져오기 (제공됨)
-      const tokenDetail = await mintclub
-        .network("basesepolia")
-        .token(tokenSymbol)
-        .getDetail();
-      
-      setUserToken({
-        tokenAddress: tokenDetail.info.token,
-        symbol: tokenDetail.info.symbol,
-        name: tokenDetail.info.name,
-      });
-      
-      return tokenDetail.info.token;
-    } else {
-      setUserToken(null);
-      return null;
-    }
-  } catch (error) {
-    console.error("토큰 확인 중 오류:", error);
-    setUserToken(null);
-    return null;
-  } finally {
-    setCheckingToken(false);
-  }
-};
+// TODO 2: mint.club SDK로 토큰 존재 여부 확인
+// mintclub.network(NETWORK.BASE_SEPOLIA).token(tokenSymbol).exists()
+const exists = false; // 수정 필요
 ```
 
-**💡 정답**: 
-- `username.toUpperCase()`
-- `"basesepolia"`
-- `tokenSymbol`
+**💡 해결 방법**: 
+```typescript
+const tokenSymbol = `BASED${username.toUpperCase()}`;
+const exists = await mintclub.network(NETWORK.BASE_SEPOLIA).token(tokenSymbol).exists();
+```
 
 **✅ 성공 확인**: 콘솔에 "토큰 존재 여부: false" 출력
 
@@ -327,71 +299,46 @@ const checkUserToken = async (username: string) => {
 
 **📍 파일**: `hooks/useUserToken.ts`
 
+**핵심 TODO 1개 (3단계):**
+
+**주석 해제 후 수정하기** - 현재 `const result = false;`로 되어 있음
+
 ```typescript
-/**
- * TODO Task 4: 새로운 사용자 토큰 생성
- * 힌트: mintclub.network().token().create() 사용
- */
-const createUserToken = async (username: string): Promise<boolean> => {
-  if (!username) {
-    toast.error("사용자명이 필요합니다");
-    return false;
-  }
+// TODO: mint.club 토큰 생성
+// mintclub.network(NETWORK.BASE_SEPOLIA).token(tokenSymbol).create({...})
+// const result = await mintclub
+//   .network(NETWORK.BASE_SEPOLIA)
+//   .token(tokenSymbol)
+//   .create({
+//     name: tokenSymbol,
+//     reserveToken: {
+//       address: NETWORK.ETH_ADDRESS,
+//       decimals: USER_TOKEN_CONFIG.DECIMALS,
+//     },
+//     curveData: {
+//       curveType: USER_TOKEN_CONFIG.CURVE_TYPE as const,
+//       stepCount: USER_TOKEN_CONFIG.STEP_COUNT,
+//       maxSupply: USER_TOKEN_CONFIG.MAX_SUPPLY,
+//       initialMintingPrice: USER_TOKEN_CONFIG.INITIAL_PRICE,
+//       finalMintingPrice: USER_TOKEN_CONFIG.FINAL_PRICE,
+//     },
+//   });
+const result = false; // 이 줄을 위 코드로 교체
 
-  console.log("토큰 생성 시작");
-  toast.loading("토큰 생성 중...", { id: "token-creation" });
-
-  const tokenSymbol = `BASED${username.toUpperCase()}`;
-
-  try {
-    const result = await mintclub
-      .network(/* TODO: 네트워크 이름 */)
-      .token(/* TODO: 토큰 심볼 */)
-      .create({
-        name: tokenSymbol,
-        reserveToken: {
-          address: "0x4200000000000000000000000000000000000006", // Base ETH
-          decimals: 18,
-        },
-        curveData: {
-          curveType: /* TODO: "EXPONENTIAL" 입력 */ as const,
-          stepCount: 100,
-          maxSupply: 1_000_000_000,
-          initialMintingPrice: 0.0000001, // 0.0000001 ETH
-          finalMintingPrice: 0.1, // 0.1 ETH
-        },
-      });
-
-    console.log("토큰 생성 결과:", result);
-
-    if (result) {
-      console.log("토큰 생성 트랜잭션 전송됨");
-      toast.success("토큰이 성공적으로 생성되었습니다! 🎉", { id: "token-creation" });
-      
-      // TODO: 토큰 상태 새로고침
-      await /* TODO: checkUserToken 함수 호출 */(username);
-      return true;
-    }
-    
-    return false;
-  } catch (error) {
-    console.error("토큰 생성 중 오류:", error);
-    toast.error("토큰 생성에 실패했습니다. 다시 시도해주세요.", { id: "token-creation" });
-    return false;
-  }
-};
+// TODO: 토큰 상태 새로고침 - checkUserToken(username) 호출
+await /* TODO: checkUserToken 함수 호출 */ username; // 수정 필요
 ```
 
-**💡 정답**:
-- `"basesepolia"`
-- `tokenSymbol`
-- `"EXPONENTIAL"`
-- `checkUserToken`
+**💡 해결 방법**: 
+1. 주석을 해제하고 `const result = false;` 제거
+2. `await checkUserToken(username);` 호출
+
+**⚠️ 중요**: Base Sepolia ETH가 있어야 트랜잭션 실행 가능!
 
 **✅ 성공 확인**: 
+- 지갑에서 트랜잭션 승인 팝업
 - 토스트 메시지: "토큰이 성공적으로 생성되었습니다! 🎉"
 - 프로필에서 "활성화됨" 배지 표시
-- 토큰 주소 표시
 
 ---
 
@@ -416,9 +363,10 @@ const createUserToken = async (username: string): Promise<boolean> => {
 #### 자주 발생하는 오류들:
 
 1. **"Network Error"**: 인터넷 연결 확인
-2. **"User Rejected"**: 지갑에서 거래 승인 필요
-3. **"Insufficient Funds"**: Base Sepolia ETH 필요
+2. **"User Rejected"**: 지갑에서 거래 승인 필요  
+3. **"Insufficient Funds"**: [Base Sepolia ETH](https://www.alchemy.com/faucets/base-sepolia) 필요
 4. **"Token Already Exists"**: 다른 사용자명으로 시도
+5. **빌드 에러**: TODO 주석이 코드 중간에 있으면 안됨 (실제 값으로 교체)
 
 #### 도움 요청:
 - 🙋‍♂️ 강사에게 손들고 질문
