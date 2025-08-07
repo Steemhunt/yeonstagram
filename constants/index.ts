@@ -38,10 +38,10 @@ export const NFT_CONFIG = {
 
 // 이미지 압축 설정
 export const IMAGE_COMPRESSION = {
-  MAX_SIZE_MB: 1, // 최대 파일 크기 1MB
-  MAX_WIDTH_HEIGHT: 1920, // 최대 가로/세로 크기
-  INITIAL_QUALITY: 0.8, // 초기 품질
-  USE_WEB_WORKER: true,
+  maxSizeMB: 1, // 최대 파일 크기 1MB
+  maxWidthOrHeight: 1920, // 최대 가로/세로 크기
+  initialQuality: 0.8, // 초기 품질
+  useWebWorker: true,
 } as const;
 
 // 토스트 메시지

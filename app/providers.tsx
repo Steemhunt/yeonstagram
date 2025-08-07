@@ -3,6 +3,7 @@
 import { type ReactNode } from "react";
 import { baseSepolia } from "wagmi/chains";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import MotionConfig from "@/components/MotionConfig";
 
 export function Providers(props: { children: ReactNode }) {
   return (
@@ -18,7 +19,7 @@ export function Providers(props: { children: ReactNode }) {
         },
       }}
     >
-      {props.children}
+      <MotionConfig>{props.children}</MotionConfig>
     </MiniKitProvider>
   );
 }

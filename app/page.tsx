@@ -13,6 +13,7 @@
 
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { motion, AnimatePresence } from "motion/react";
 
 // 커스텀 훅들
 import { useUserToken } from "@/hooks/useUserToken";
@@ -25,6 +26,17 @@ import CreatePostModal from "@/components/CreatePostModal";
 
 // 상수 및 타입
 import { DESIGN } from "@/constants";
+import Image from "next/image";
+
+// 애니메이션 설정
+import {
+  fadeIn,
+  fadeInUp,
+  timing,
+  spring,
+  fabAnimation,
+  spinnerAnimation,
+} from "@/lib/animations";
 
 /**
  * 메인 앱 컴포넌트
@@ -56,6 +68,7 @@ export default function App() {
    */
   useEffect(() => {
     // TODO: MiniKit SDK 초기화 코드 작성
+    setFrameReady();
   }, []);
 
   /**
@@ -94,24 +107,41 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <motion.div
+      className="min-h-screen bg-white text-black font-instagram"
+      initial="initial"
+      animate="animate"
+      variants={fadeIn}
+    >
       {/* 인스타그램 스타일 헤더 */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <motion.header
+        className="sticky top-0 z-50 bg-white border-b border-gray-200"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ ...spring.smooth }}
+      >
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <h1
-              className="text-2xl font-bold"
+            <motion.h1
+              className="text-2xl font-display font-bold cursor-pointer text-instagram-title"
               style={{ color: DESIGN.YONSEI_BLUE }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ ...spring.stiff }}
             >
-              연스타그램
-            </h1>
-            <div className="text-sm text-gray-500">Yonsei × Instagram</div>
+              YEONSTAGRAM
+            </motion.h1>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* 메인 콘텐츠 */}
-      <main className="max-w-md mx-auto">
+      <motion.main
+        className="max-w-md mx-auto"
+        variants={fadeInUp}
+        initial="initial"
+        animate="animate"
+      >
         {/* 프로필 섹션 */}
         <ProfileHeader
           userToken={userToken}
@@ -120,14 +150,25 @@ export default function App() {
         />
 
         {/* 포스트 그리드 */}
-        <div className="border-t border-gray-200">
+        <motion.div
+          className="border-t border-gray-200"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: timing.normal }}
+        >
           {checkingToken || loadingPosts ? (
-            <div className="flex items-center justify-center py-20">
-              <div
-                className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300"
+            <motion.div
+              className="flex items-center justify-center py-20"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: timing.normal }}
+            >
+              <motion.div
+                className="rounded-full h-8 w-8 border-2 border-gray-300"
                 style={{ borderTopColor: DESIGN.YONSEI_BLUE }}
+                animate={spinnerAnimation.animate}
               />
-            </div>
+            </motion.div>
           ) : (
             <PostGrid
               posts={posts}
@@ -135,40 +176,52 @@ export default function App() {
               onImageError={handleImageError}
             />
           )}
-        </div>
-      </main>
+        </motion.div>
+      </motion.main>
 
       {/* 플로팅 포스트 생성 버튼 */}
-      {userToken && (
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white"
-          style={{ backgroundColor: DESIGN.YONSEI_BLUE }}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <AnimatePresence>
+        {userToken && (
+          <motion.button
+            onClick={() => setShowCreateModal(true)}
+            className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white"
+            style={{ backgroundColor: DESIGN.YONSEI_BLUE }}
+            variants={fabAnimation}
+            initial="initial"
+            animate="animate"
+            exit="initial"
+            whileHover="hover"
+            whileTap="tap"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </button>
-      )}
+            <motion.svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              animate={{ rotate: showCreateModal ? 45 : 0 }}
+              transition={{ ...spring.stiff }}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </motion.svg>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* 포스트 생성 모달 */}
-      {showCreateModal && (
-        <CreatePostModal
-          userToken={userToken}
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={handlePostSuccess}
-        />
-      )}
-    </div>
+      <AnimatePresence>
+        {showCreateModal && (
+          <CreatePostModal
+            userToken={userToken}
+            onClose={() => setShowCreateModal(false)}
+            onSuccess={handlePostSuccess}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

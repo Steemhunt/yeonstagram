@@ -15,6 +15,14 @@ import {
   IMAGE_COMPRESSION,
   TOAST_MESSAGES,
 } from "@/constants";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  modalOverlay,
+  modalContent,
+  fadeInUp,
+  spring,
+  timing,
+} from "@/lib/animations";
 
 export default function CreatePostModal({
   userToken,
@@ -64,7 +72,7 @@ export default function CreatePostModal({
     } catch (error) {
       console.error("IPFS 업로드 오류:", error);
       toast.error(
-        "이미지 업로드에 실패했습니다. Filebase API 키와 콘솔을 확인해주세요.",
+        "이미지 업로드에 실패했습니다. Filebase API 키와 콘솔을 확인해주세요."
       );
       throw error;
     }
@@ -157,14 +165,38 @@ export default function CreatePostModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+    <motion.div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      variants={modalOverlay}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      onClick={onClose}
+    >
+      <motion.div
+        className="bg-white rounded-lg max-w-md w-full p-6"
+        variants={modalContent}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* 모달 헤더 */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">새 포스트</h2>
-          <button
+        <motion.div
+          className="flex justify-between items-center mb-6"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: timing.normal }}
+        >
+          <h2 className="text-xl font-semibold text-instagram-title">
+            새 포스트
+          </h2>
+          <motion.button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ ...spring.stiff }}
           >
             <svg
               className="w-6 h-6"
@@ -179,12 +211,17 @@ export default function CreatePostModal({
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* 이미지 업로드 영역 */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <motion.div
+          className="mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: timing.normal }}
+        >
+          <label className="block text-sm font-medium text-gray-700 mb-2 text-instagram-body">
             이미지
           </label>
           {imagePreview ? (
@@ -194,12 +231,15 @@ export default function CreatePostModal({
                 alt="Preview"
                 className="w-full h-48 object-cover rounded-lg"
               />
-              <button
+              <motion.button
                 onClick={() => {
                   setImagePreview("");
                   setSelectedFile(null);
                 }}
                 className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ ...spring.stiff }}
               >
                 <svg
                   className="w-4 h-4"
@@ -214,15 +254,26 @@ export default function CreatePostModal({
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </button>
+              </motion.button>
             </div>
           ) : (
-            <label className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400">
-              <svg
+            <motion.label
+              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 block"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ ...spring.smooth }}
+            >
+              <motion.svg
                 className="w-12 h-12 mx-auto text-gray-400 mb-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                animate={{ y: [0, -10, 0] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <path
                   strokeLinecap="round"
@@ -230,50 +281,70 @@ export default function CreatePostModal({
                   strokeWidth={2}
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
-              </svg>
-              <p className="text-gray-500">이미지를 선택하세요</p>
+              </motion.svg>
+              <p className="text-gray-500 text-instagram-body">
+                이미지를 선택하세요
+              </p>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}
                 className="hidden"
               />
-            </label>
+            </motion.label>
           )}
-        </div>
+        </motion.div>
 
         {/* 포스트 이름 입력 */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: timing.normal }}
+        >
+          <label className="block text-sm font-medium text-gray-700 mb-2 text-instagram-body">
             포스트 이름
           </label>
-          <input
+          <motion.input
             type="text"
             value={postName}
             onChange={(e) => setPostName(e.target.value)}
             placeholder="포스트 이름을 입력하세요"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-instagram-body"
+            whileFocus={{ scale: 1.02 }}
+            transition={{ ...spring.smooth }}
           />
-        </div>
+        </motion.div>
 
         {/* 액션 버튼들 */}
-        <div className="flex space-x-3">
-          <button
+        <motion.div
+          className="flex space-x-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: timing.normal }}
+        >
+          <motion.button
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+            className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 font-medium text-instagram-body"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ ...spring.stiff }}
           >
             취소
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={handleCreate}
             disabled={!postName || !selectedFile || creating || uploading}
-            className="flex-1 px-4 py-2 text-white rounded-md disabled:opacity-50"
+            className="flex-1 px-4 py-2 text-white rounded-md disabled:opacity-50 font-medium text-instagram-body"
             style={{ backgroundColor: DESIGN.YONSEI_BLUE }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ ...spring.stiff }}
           >
             {creating || uploading ? "생성 중..." : "포스트 생성"}
-          </button>
-        </div>
-      </div>
-    </div>
+          </motion.button>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }

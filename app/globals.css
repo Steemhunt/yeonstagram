@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Instagram-inspired font imports */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
 :root {
   --background: #ffffff;
   --foreground: #111111;
@@ -17,9 +21,63 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Geist", sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Helvetica",
+    "Arial",
+    sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  font-size: 80%;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Instagram-style typography utilities */
+.font-instagram {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Helvetica",
+    "Arial",
+    sans-serif;
+}
+
+.font-instagram-display {
+  font-family:
+    "Poppins",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Helvetica",
+    "Arial",
+    sans-serif;
+}
+
+/* Instagram-style text classes */
+.text-instagram-title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.text-instagram-body {
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-instagram-caption {
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
