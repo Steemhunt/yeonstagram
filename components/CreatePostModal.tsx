@@ -23,6 +23,8 @@ import {
   spring,
   timing,
 } from "@/lib/animations";
+import { useAccount, useWalletClient, useSwitchChain } from "wagmi";
+import { baseSepolia } from "viem/chains";
 
 export default function CreatePostModal({
   userToken,
@@ -34,6 +36,44 @@ export default function CreatePostModal({
   const [imagePreview, setImagePreview] = useState<string>("");
   const [uploading, setUploading] = useState(false);
   const [creating, setCreating] = useState(false);
+  const { address, chain } = useAccount();
+  const { switchChain } = useSwitchChain();
+
+  const { data: walletClient } = useWalletClient({
+    account: address,
+    chainId: Number(NETWORK.BASE_SEPOLIA),
+  });
+
+  /**
+   * 체인 확인 및 전환
+   */
+  const ensureCorrectChain = async (): Promise<boolean> => {
+    if (!chain) {
+      toast.error("지갑이 연결되지 않았습니다.");
+      return false;
+    }
+
+    if (chain.id !== Number(NETWORK.BASE_SEPOLIA)) {
+      try {
+        console.log(
+          `🔄 현재 체인 ${chain.id}에서 Base Sepolia (${NETWORK.BASE_SEPOLIA})로 전환 중...`
+        );
+        toast.loading("Base Sepolia 네트워크로 전환 중...", {
+          id: "chain-switch",
+        });
+
+        await switchChain({ chainId: Number(NETWORK.BASE_SEPOLIA) });
+        toast.success("네트워크가 전환되었습니다.", { id: "chain-switch" });
+        return true;
+      } catch (error) {
+        console.error("❌ 체인 전환 실패:", error);
+        toast.error("네트워크 전환에 실패했습니다.", { id: "chain-switch" });
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   /**
    * 파일 선택 처리
@@ -110,6 +150,12 @@ export default function CreatePostModal({
 
     console.log("✅ 모든 입력값 검증 통과");
 
+    // 체인 확인 및 전환
+    const chainSwitched = await ensureCorrectChain();
+    if (!chainSwitched) {
+      return;
+    }
+
     setCreating(true);
     try {
       // 1. 이미지를 IPFS에 업로드
@@ -176,22 +222,19 @@ export default function CreatePostModal({
       toast.loading(TOAST_MESSAGES.POST_CREATING, { id: "post-creation" });
 
       console.log("📡 mint.club SDK 호출 중...");
-      const result = await mintclub
+      const receipt = await mintclub
         .network(NETWORK.BASE_SEPOLIA)
         .nft(nftSymbol)
-        .create(nftParams);
+        .create({
+          ...nftParams,
+          onError: (error) => {
+            console.error("💥 포스트 생성 중 오류 발생:", error);
+          },
+        });
 
-      console.log("🔍 NFT 생성 결과 타입:", typeof result);
-      console.log("📊 NFT 생성 결과 상세:", result);
-
-      if (result) {
-        console.log("🎉 NFT 생성 성공!");
-        toast.success(TOAST_MESSAGES.POST_SUCCESS, { id: "post-creation" });
-        onSuccess();
-      } else {
-        console.error("❌ NFT 생성 실패: 결과가 null/undefined");
-        throw new Error("NFT 생성에 실패했습니다. 결과가 반환되지 않았습니다.");
-      }
+      console.log("🎉 NFT 생성 성공!");
+      toast.success(TOAST_MESSAGES.POST_SUCCESS, { id: "post-creation" });
+      onSuccess();
     } catch (error) {
       console.error("💥 포스트 생성 중 오류 발생:");
       console.error("🔍 에러 타입:", typeof error);
@@ -326,7 +369,7 @@ export default function CreatePostModal({
             </div>
           ) : (
             <motion.label
-              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 block"
+              className="border-2 border-dashed border-gray-300 aspect-square w-full flex items-center justify-center rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 flex-col"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ ...spring.smooth }}

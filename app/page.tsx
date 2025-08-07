@@ -26,7 +26,6 @@ import CreatePostModal from "@/components/CreatePostModal";
 
 // 상수 및 타입
 import { DESIGN } from "@/constants";
-import Image from "next/image";
 
 // 애니메이션 설정
 import {
