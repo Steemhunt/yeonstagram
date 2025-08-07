@@ -4,6 +4,22 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
+import { Inter, Poppins } from "next/font/google";
+
+// Configure Instagram-style fonts
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -43,7 +59,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-background">
+      <body
+        className={`bg-background ${inter.variable} ${poppins.variable} font-sans`}
+      >
         <Providers>{children}</Providers>
         <Toaster
           position="top-center"

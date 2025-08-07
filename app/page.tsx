@@ -123,7 +123,7 @@ export default function App() {
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <motion.h1
-              className="text-2xl font-display font-bold cursor-pointer text-instagram-title"
+              className="text-2xl font-bold cursor-pointer font-instagram"
               style={{ color: DESIGN.YONSEI_BLUE }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

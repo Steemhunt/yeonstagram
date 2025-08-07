@@ -14,6 +14,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          "var(--font-inter)",
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",
@@ -24,6 +25,7 @@ const config: Config = {
           "sans-serif",
         ],
         display: [
+          "var(--font-poppins)",
           "Poppins",
           "Inter",
           "-apple-system",
@@ -35,6 +37,19 @@ const config: Config = {
           "sans-serif",
         ],
         instagram: [
+          "var(--font-inter)",
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+        "instagram-display": [
+          "var(--font-poppins)",
+          "Poppins",
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",

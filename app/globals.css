@@ -22,6 +22,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family:
+    var(--font-inter),
     "Inter",
     -apple-system,
     BlinkMacSystemFont,
@@ -42,6 +43,7 @@ body {
 /* Instagram-style typography utilities */
 .font-instagram {
   font-family:
+    var(--font-inter),
     "Inter",
     -apple-system,
     BlinkMacSystemFont,
@@ -54,6 +56,7 @@ body {
 
 .font-instagram-display {
   font-family:
+    var(--font-poppins),
     "Poppins",
     -apple-system,
     BlinkMacSystemFont,
