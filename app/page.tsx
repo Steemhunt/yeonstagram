@@ -48,10 +48,16 @@ export default function App() {
   const username = userContext?.username;
 
   /**
-   * MiniKit 초기화
+   * TODO Task 1: MiniKit 초기화
+   *
+   * 🎯 목표: Farcaster MiniKit SDK 초기화
+   * 📝 힌트: sdk.actions.ready() 함수를 호출하세요
+   *
+   * 이 함수는 MiniKit이 Farcaster 앱과 통신할 수 있도록 준비시킵니다.
    */
   useEffect(() => {
-    sdk.actions.ready();
+    // TODO: MiniKit SDK 초기화 코드 작성
+    // 힌트: sdk.actions.ready();
   }, []);
 
   /**
