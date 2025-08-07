@@ -68,7 +68,6 @@ export default function App() {
    */
   useEffect(() => {
     // TODO: MiniKit SDK 초기화 코드 작성
-    setFrameReady();
   }, []);
 
   /**

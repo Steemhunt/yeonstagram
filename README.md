@@ -49,9 +49,30 @@ Yonsei University Instagram Clone with MiniKit & mint.club v2
    npm run dev
    ```
 
-5. **브라우저에서 확인**
+5. **ngrok 터널 설정 (선택사항 - Farcaster 테스트용)**
+   
+   Farcaster MiniKit은 외부에서 접근 가능한 URL이 필요합니다. 로컬 개발 환경에서 테스트하려면 터널을 설정하세요.
+   
+   ```bash
+   # ngrok 설치 (macOS)
+   brew install ngrok
+   
+   # 또는 npm으로 설치
+   npm install -g ngrok
+   
+   # 터널 실행 (별도 터미널에서)
+   ngrok http 3000
    ```
+   
+   실행 후 표시되는 `https://****-***-***-***.ngrok-free.app` URL을 사용하여 외부에서 앱에 접근할 수 있습니다.
+
+6. **브라우저에서 확인**
+   ```
+   # 로컬 개발
    http://localhost:3000
+   
+   # 외부 접근 (ngrok 터널 사용시)
+   https://****-***-***-***.ngrok-free.app
    ```
 
 ## 🏗️ 프로젝트 구조
@@ -183,6 +204,10 @@ cd yeonstagram
 npm install
 ```
 
+
+
+
+
 #### 2. Filebase API 키 설정
 1. [Filebase](https://filebase.com/) 가입
 2. IPFS 버킷 생성
@@ -202,7 +227,23 @@ NEXT_PUBLIC_FILEBASE_API_KEY=당신의_API_키
 ```bash
 npm run dev
 ```
-브라우저에서 `http://localhost:3000` 접속
+
+#### 5. ngrok 터널 설정 (Farcaster 테스트용)
+Farcaster MiniKit은 외부 접근 가능한 URL이 필요합니다.
+
+```bash
+# ngrok 설치
+brew install ngrok
+# 또는
+npm install -g ngrok
+
+# 별도 터미널에서 터널 실행
+ngrok http 3000
+```
+
+**접속 URL:**
+- 로컬: `http://localhost:3000`
+- 외부: `https://****-***-***-***.ngrok-free.app` (터널 실행시 표시)
 
 ---
 
@@ -367,6 +408,8 @@ await /* TODO: checkUserToken 함수 호출 */ username; // 수정 필요
 3. **"Insufficient Funds"**: [Base Sepolia ETH](https://www.alchemy.com/faucets/base-sepolia) 필요
 4. **"Token Already Exists"**: 다른 사용자명으로 시도
 5. **빌드 에러**: TODO 주석이 코드 중간에 있으면 안됨 (실제 값으로 교체)
+6. **Farcaster 연결 안됨**: ngrok 터널 URL 사용 필요 (`*.ngrok-free.app`)
+7. **터널 연결 실패**: `ngrok` 설치 확인 또는 다른 터미널에서 실행
 
 #### 도움 요청:
 - 🙋‍♂️ 강사에게 손들고 질문
