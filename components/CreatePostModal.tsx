@@ -3,28 +3,26 @@
  * 이미지 업로드 및 NFT 포스트 생성 기능
  */
 
-import { useState } from "react";
-import { mintclub } from "mint.club-v2-sdk";
-import toast from "react-hot-toast";
-import imageCompression from "browser-image-compression";
-import { CreatePostModalProps } from "@/types";
 import {
   DESIGN,
+  IMAGE_COMPRESSION,
   NETWORK,
   NFT_CONFIG,
-  IMAGE_COMPRESSION,
   TOAST_MESSAGES,
 } from "@/constants";
-import { motion, AnimatePresence } from "motion/react";
 import {
-  modalOverlay,
   modalContent,
-  fadeInUp,
+  modalOverlay,
   spring,
-  timing,
+  timing
 } from "@/lib/animations";
-import { useAccount, useWalletClient, useSwitchChain } from "wagmi";
-import { baseSepolia } from "viem/chains";
+import { CreatePostModalProps } from "@/types";
+import imageCompression from "browser-image-compression";
+import { mintclub } from "mint.club-v2-sdk";
+import { motion } from "motion/react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useAccount, useSwitchChain, useWalletClient } from "wagmi";
 
 export default function CreatePostModal({
   userToken,
