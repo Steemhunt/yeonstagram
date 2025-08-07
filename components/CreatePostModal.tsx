@@ -297,7 +297,7 @@ export default function CreatePostModal({
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="w-full h-48 object-cover rounded-lg"
+                className="w-full aspect-square object-cover rounded-lg"
               />
               <motion.button
                 onClick={() => {

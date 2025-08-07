@@ -68,6 +68,7 @@ export default function App() {
    */
   useEffect(() => {
     // TODO: MiniKit SDK 초기화 코드 작성
+    setFrameReady();
   }, []);
 
   /**
@@ -107,7 +108,7 @@ export default function App() {
 
   return (
     <motion.div
-      className="min-h-screen bg-white text-black font-instagram"
+      className="min-h-screen bg-white overflow-hidden text-black font-instagram"
       initial="initial"
       animate="animate"
       variants={fadeIn}
